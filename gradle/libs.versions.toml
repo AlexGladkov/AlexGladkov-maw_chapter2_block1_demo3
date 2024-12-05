@@ -28,6 +28,9 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 
 ktor-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
 ktor-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
+ktor-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
+
+mock = "com.squareup.okhttp3:mockwebserver:4.11.0"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

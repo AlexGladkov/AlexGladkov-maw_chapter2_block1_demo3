@@ -42,6 +42,9 @@ android {
 dependencies {
     implementation(libs.ktor.core)
     implementation(libs.ktor.cio)
+    implementation(libs.ktor.okhttp)
+
+    implementation(libs.mock)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
