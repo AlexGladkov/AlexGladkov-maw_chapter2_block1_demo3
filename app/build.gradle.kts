@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "tech.mobiledeveloper.block1example2"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "tech.mobiledeveloper.block1example2"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -40,6 +40,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.ktor.core)
+    implementation(libs.ktor.cio)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
