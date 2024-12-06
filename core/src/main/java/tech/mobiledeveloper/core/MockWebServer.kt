@@ -1,4 +1,4 @@
-package tech.mobiledeveloper.block1example2.network
+package tech.mobiledeveloper.core
 
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

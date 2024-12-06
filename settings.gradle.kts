@@ -1,3 +1,5 @@
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 pluginManagement {
     repositories {
         google {
@@ -21,3 +23,8 @@ dependencyResolutionManagement {
 
 rootProject.name = "Block1Example2"
 include(":app")
+include(":feature-a")
+include(":feature-b")
+include(":core")
+include(":auth")
+include(":auth-api")

@@ -12,21 +12,19 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
-import io.ktor.client.HttpClient
-import okhttp3.mockwebserver.MockWebServer
-import tech.mobiledeveloper.block1example2.network.KtorClient
-import tech.mobiledeveloper.block1example2.network.setupMockWebServer
+import tech.mobiledeveloper.auth.AuthorizationHandlerImpl
+import tech.mobiledeveloper.auth.TokenManagerImpl
+import tech.mobiledeveloper.auth_api.AuthStatus
+import tech.mobiledeveloper.auth_api.AuthorizationHandler
 import tech.mobiledeveloper.block1example2.screens.LoggedInScreen
 import tech.mobiledeveloper.block1example2.screens.LoginScreen
 import tech.mobiledeveloper.block1example2.ui.theme.Block1Example2Theme
+import tech.mobiledeveloper.core.KtorClient
+import tech.mobiledeveloper.core.setupMockWebServer
 
 enum class Navigation {
     Login, LoggedIn
@@ -36,23 +34,27 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val tokenManager = TokenManagerImpl()
+        val authorizationHandler = AuthorizationHandlerImpl()
         val mockWebServer = setupMockWebServer()
-        val ktorClient = KtorClient(mockWebServer)
+        val ktorClient = KtorClient(tokenManager, mockWebServer, authorizationHandler)
 
         setContent {
+            val authState by authorizationHandler.isAuth.collectAsState()
+
             CompositionLocalProvider(
-                LocalHttpClient provides ktorClient,
+                LocalHttpClient provides ktorClient
             ) {
                 Block1Example2Theme {
                     Box(modifier = Modifier.fillMaxSize()) {
-                        var currentScreen by remember { mutableStateOf(Navigation.Login) }
-
-                        when (currentScreen) {
-                            Navigation.Login -> LoginScreen {
-                                currentScreen = Navigation.LoggedIn
+                        when (authState) {
+                            is AuthStatus.Login -> {
+                                LoginScreen {
+                                    authorizationHandler.login((authState as AuthStatus.Login).withMerge)
+                                }
                             }
 
-                            Navigation.LoggedIn -> LoggedInScreen()
+                            AuthStatus.LoggedIn -> LoggedInScreen()
                         }
                     }
                 }

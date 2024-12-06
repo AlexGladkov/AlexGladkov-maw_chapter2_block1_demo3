@@ -40,10 +40,9 @@ android {
 }
 
 dependencies {
-    implementation(libs.ktor.core)
-    implementation(libs.ktor.cio)
-    implementation(libs.ktor.okhttp)
-
+    implementation(projects.core)
+    implementation(projects.auth)
+    implementation(projects.authApi)
     implementation(libs.mock)
 
     implementation(libs.androidx.core.ktx)

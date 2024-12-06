@@ -19,7 +19,6 @@ import tech.mobiledeveloper.block1example2.LocalHttpClient
 
 @Composable
 fun LoginScreen(next: () -> Unit) {
-    val ktorClient = LocalHttpClient.current
     val coroutineScope = rememberCoroutineScope()
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -27,14 +26,17 @@ fun LoginScreen(next: () -> Unit) {
             modifier = Modifier.align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(modifier = Modifier.padding(12.dp), text = "Hello, World", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+            Text(
+                modifier = Modifier.padding(12.dp),
+                text = "Hello, World",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
+            )
 
             Button(
                 modifier = Modifier.width(300.dp),
                 onClick = {
-                    coroutineScope.launch {
-                        next.invoke()
-                    }
+                    next.invoke()
                 }) {
                 Text("Login")
             }
