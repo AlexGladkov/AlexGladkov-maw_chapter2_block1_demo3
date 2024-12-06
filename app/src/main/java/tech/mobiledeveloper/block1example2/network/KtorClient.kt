@@ -7,21 +7,17 @@ import io.ktor.client.request.get
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 import okhttp3.mockwebserver.MockWebServer
+import tech.mobiledeveloper.block1example2.auth.AuthorizationHandler
 
 class UnauthorizedException : Exception()
+class RefreshUpdateFailedException : Exception()
 
-class KtorClient(private val server: MockWebServer) {
+class KtorClient(private val server: MockWebServer, private val authorizationHandler: AuthorizationHandler) {
+    private val tokenHandler = TokenManager()
+
     private val _client = HttpClient(OkHttp) {
-        HttpResponseValidator {
-            validateResponse { response ->
-                if (response.status == HttpStatusCode.Unauthorized) {
-                    throw UnauthorizedException()
-                }
-            }
-
-            handleResponseExceptionWithRequest { exception, _ ->
-
-            }
+        install(TokenAuthFeature) {
+            tokenManager = tokenHandler
         }
     }
 
@@ -29,7 +25,12 @@ class KtorClient(private val server: MockWebServer) {
 
     suspend fun makeExpiredRequest() {
         val mockUrl = server.url("/unauthorized-endpoint").toString()
-
-        val response = _client.get(mockUrl)
+        try {
+            val response = _client.get(mockUrl)
+        } catch (e: Exception) {
+            if (e is RefreshUpdateFailedException) {
+                authorizationHandler.logout()
+            }
+        }
     }
 }

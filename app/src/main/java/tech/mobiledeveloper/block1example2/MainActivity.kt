@@ -12,6 +12,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import io.ktor.client.HttpClient
 import okhttp3.mockwebserver.MockWebServer
+import tech.mobiledeveloper.block1example2.auth.AuthorizationHandler
 import tech.mobiledeveloper.block1example2.network.KtorClient
 import tech.mobiledeveloper.block1example2.network.setupMockWebServer
 import tech.mobiledeveloper.block1example2.screens.LoggedInScreen
@@ -36,23 +38,24 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val authorizationHandler = AuthorizationHandler()
         val mockWebServer = setupMockWebServer()
-        val ktorClient = KtorClient(mockWebServer)
+        val ktorClient = KtorClient(mockWebServer, authorizationHandler)
 
         setContent {
+            val isAuth by authorizationHandler.isAuth.collectAsState()
+
             CompositionLocalProvider(
                 LocalHttpClient provides ktorClient,
             ) {
                 Block1Example2Theme {
                     Box(modifier = Modifier.fillMaxSize()) {
-                        var currentScreen by remember { mutableStateOf(Navigation.Login) }
-
-                        when (currentScreen) {
-                            Navigation.Login -> LoginScreen {
-                                currentScreen = Navigation.LoggedIn
+                        if (isAuth) {
+                            LoggedInScreen()
+                        } else {
+                            LoginScreen {
+                                authorizationHandler.login()
                             }
-
-                            Navigation.LoggedIn -> LoggedInScreen()
                         }
                     }
                 }
